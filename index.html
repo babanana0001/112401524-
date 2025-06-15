@@ -127,6 +127,16 @@
             position: relative;
             z-index: 1;
         }
+        /* 散佈圖背景與霧面 */
+        #scatter-section {
+            display: none;
+            min-height: 100vh;
+            background: #f3f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         /* 地圖及折線圖、圓餅圖、長條圖頁面功能按鈕美化 */
         .data-btn, #public-pie-btn, #private-pie-btn, #total-pie-btn, #back-main1, #back-main2 {
             font-size: 1.1rem;
@@ -149,7 +159,7 @@
             box-shadow: 0 4px 16px rgba(255, 204, 188, 0.28);
             outline: none;
         }
-        #year-select, #pie-year-select, #bar-year-select, #bubble-year-select {
+        #year-select, #pie-year-select, #bar-year-select, #bubble-year-select, #scatter-year-select {
             font-size: 1.1rem;
             padding: 0.4rem 1rem;
             border-radius: 1rem;
@@ -159,7 +169,7 @@
             color: #6d4c41;
             transition: border 0.2s;
         }
-        #year-select:focus, #pie-year-select:focus, #bar-year-select:focus, #bubble-year-select:focus {
+        #year-select:focus, #pie-year-select:focus, #bar-year-select:focus, #bubble-year-select:focus, #scatter-year-select:focus {
             border: 1.5px solid #ffab91;
             outline: none;
         }
@@ -179,6 +189,7 @@
         <button class="main-btn" id="show-bar-btn">長條圖及折線圖分析</button>
         <button class="main-btn" id="show-pie-btn">圓餅圖分析</button>
         <button class="main-btn" id="show-bubble-btn">氣泡圖</button>
+        <button class="main-btn" id="show-scatter-btn">散佈圖</button>
     </div>
     <!-- 應用內容 -->
     <div id="app-content">
@@ -282,6 +293,29 @@
             </div>
             <div id="bubbleChart" style="width: 100%; max-width: 1200px; height: 700px; margin:2rem auto;"></div>
         </div>
+        <!-- 散佈圖頁 -->
+        <div id="scatter-section" style="display:none; min-height:100vh; background: #f3f7fa; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="margin-top:2rem;">
+                年份：
+                <select id="scatter-year-select">
+                    <option value="104">104</option>
+                    <option value="105">105</option>
+                    <option value="106">106</option>
+                    <option value="107">107</option>
+                    <option value="108">108</option>
+                    <option value="109">109</option>
+                    <option value="110">110</option>
+                    <option value="111">111</option>
+                    <option value="112">112</option>
+                    <option value="113">113</option>
+                </select>
+                <button id="back-main5" style="float:right;">回主畫面</button>
+            </div>
+            <div style="margin: 1rem auto; padding: 1rem 2rem; background: rgba(255,255,255,0.8); border-radius: 1rem; max-width: 600px; text-align: center; font-size: 1.1rem; color: #6d4c41;">
+                每個點代表一個縣市，X軸為公立園數，Y軸為私立園數，可觀察兩者是否存在相關性。
+            </div>
+            <div id="scatterChart" style="width: 100%; max-width: 900px; height: 600px; margin:2rem auto;"></div>
+        </div>
     </div>
     <script src="https://unpkg.com/d3"></script>
     <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
@@ -295,6 +329,7 @@
             document.getElementById('bar-section').style.display = 'none';
             document.getElementById('pie-section').style.display = 'none';
             document.getElementById('bubble-section').style.display = 'none';
+            document.getElementById('scatter-section').style.display = 'none';
         };
         document.getElementById('show-bar-btn').onclick = function() {
             document.getElementById('main-screen').style.display = 'none';
@@ -303,6 +338,7 @@
             document.getElementById('bar-section').style.display = 'flex';
             document.getElementById('pie-section').style.display = 'none';
             document.getElementById('bubble-section').style.display = 'none';
+            document.getElementById('scatter-section').style.display = 'none';
         };
         document.getElementById('show-pie-btn').onclick = function() {
             document.getElementById('main-screen').style.display = 'none';
@@ -311,6 +347,7 @@
             document.getElementById('bar-section').style.display = 'none';
             document.getElementById('pie-section').style.display = 'block';
             document.getElementById('bubble-section').style.display = 'none';
+            document.getElementById('scatter-section').style.display = 'none';
         };
         document.getElementById('show-bubble-btn').onclick = function() {
             document.getElementById('main-screen').style.display = 'none';
@@ -319,6 +356,16 @@
             document.getElementById('bar-section').style.display = 'none';
             document.getElementById('pie-section').style.display = 'none';
             document.getElementById('bubble-section').style.display = 'flex';
+            document.getElementById('scatter-section').style.display = 'none';
+        };
+        document.getElementById('show-scatter-btn').onclick = function() {
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            document.getElementById('map-section').style.display = 'none';
+            document.getElementById('bar-section').style.display = 'none';
+            document.getElementById('pie-section').style.display = 'none';
+            document.getElementById('bubble-section').style.display = 'none';
+            document.getElementById('scatter-section').style.display = 'flex';
         };
         document.getElementById('back-main1').onclick = function() {
             document.getElementById('main-screen').style.display = 'flex';
@@ -339,6 +386,11 @@
             document.getElementById('main-screen').style.display = 'flex';
             document.getElementById('app-content').style.display = 'none';
             document.getElementById('bubble-section').style.display = 'none';
+        };
+        document.getElementById('back-main5').onclick = function() {
+            document.getElementById('main-screen').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('scatter-section').style.display = 'none';
         };
         Plotly.purge('lineChartOrg');
         Plotly.purge('lineChartStu');
