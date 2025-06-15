@@ -287,6 +287,36 @@ function drawBubbleChart() {
     });
 }
 
+function drawScatterChart() {
+    const year = document.getElementById('scatter-year-select').value;
+    const filtered = data.filter(d => d["學年度"] === year);
+
+    const counties = filtered.map(d => d["縣市別"]);
+    const publicNum = filtered.map(d => +d["公立機構總數"] || 0);
+    const privateNum = filtered.map(d => +d["私立機構總數"] || 0);
+
+    Plotly.newPlot('scatterChart', [{
+        x: publicNum,
+        y: privateNum,
+        text: counties,
+        mode: 'markers+text',
+        type: 'scatter',
+        marker: {
+            size: 18,
+            color: '#81d4fa',
+            opacity: 0.8,
+            line: {width: 1, color: '#333'}
+        },
+        textposition: 'top center'
+    }], {
+        title: `${year}年各縣市公立園數與私立園數散佈圖`,
+        xaxis: {title: '公立園數'},
+        yaxis: {title: '私立園數'},
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        paper_bgcolor: 'rgba(0,0,0,0)'
+    });
+}
+
 Promise.all([
     d3.json('taiwan_geo.json'),
     d3.csv('edu_B_2_2_2.csv')
@@ -376,4 +406,22 @@ Promise.all([
         document.getElementById('bubble-section').style.display = 'none';
     };
     document.getElementById('bubble-year-select').addEventListener('change', drawBubbleChart);
+
+    // 散佈圖
+    document.getElementById('show-scatter-btn').onclick = function() {
+        document.getElementById('main-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('map-section').style.display = 'none';
+        document.getElementById('bar-section').style.display = 'none';
+        document.getElementById('pie-section').style.display = 'none';
+        document.getElementById('bubble-section').style.display = 'none';
+        document.getElementById('scatter-section').style.display = 'flex';
+        drawScatterChart();
+    };
+    document.getElementById('back-main5').onclick = function() {
+        document.getElementById('main-screen').style.display = 'flex';
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('scatter-section').style.display = 'none';
+    };
+    document.getElementById('scatter-year-select').addEventListener('change', drawScatterChart);
 });
